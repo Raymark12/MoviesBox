@@ -28,6 +28,7 @@ const config = defineConfig({
         "18": { value: "18px" },
         "16": { value: "16px" },
         "14": { value: "14px" },
+        "12": { value: "12px" },
       },
       fontWeights: {
         regular: { value: 400 },
