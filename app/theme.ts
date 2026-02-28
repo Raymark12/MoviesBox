@@ -6,6 +6,7 @@ const config = defineConfig({
       colors: {
         brand: {
           primary: { value: "#FF9F1C" },
+          primaryHover: { value: "#E08A00" },
           secondary: { value: "#FF4040" },
           tertiary: { value: "#2EC4B6" },
         },
@@ -14,6 +15,7 @@ const config = defineConfig({
           base: { value: "#1B2329" },
           mid: { value: "#353F4C" },
           light: { value: "#7A8C99" },
+          border: { value: "#CAD4D9" },
         },
       },
       fonts: {
@@ -37,6 +39,7 @@ const config = defineConfig({
     semanticTokens: {
       colors: {
         bg: {
+          page: { value: "#202020" },
           dark: { value: "{colors.grey.dark}" },
           card: { value: "{colors.grey.base}" },
           muted: { value: "{colors.grey.mid}" },
@@ -44,15 +47,18 @@ const config = defineConfig({
         text: {
           primary: { value: "#FFFFFF" },
           secondary: { value: "{colors.grey.light}" },
-          muted: { value: "{colors.grey.light}" },
+          active: { value: "{colors.brand.tertiary}" },
+          negative: { value: "{colors.brand.secondary}" },
+          highlight: { value: "{colors.brand.primary}" },
+          disabled: { value: "{colors.grey.mid}" },
         },
       },
     },
   },
   globalCss: {
     body: {
-      bg: "{colors.grey.dark}",
-      color: "{colors.text.primary}",
+      bg: "bg.page",
+      color: "text.primary",
       fontSize: "16px",
       fontWeight: "regular",
     },
