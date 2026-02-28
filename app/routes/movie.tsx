@@ -5,6 +5,9 @@ import { IoMdArrowBack } from "react-icons/io";
 import type { Route } from "./+types/movie";
 import { getMovieById } from "~/services/omdb";
 import type { MovieDetail } from "~/types";
+import { isFavorite, toggleFavorite } from "~/services/favorites";
+import { TvSeriesTag } from "~/components/TvSeriesTag";
+import { FavoriteHeart } from "~/components/FavoriteHeart";
 
 const PLACEHOLDER_POSTER = "/images/tv.png";
 
@@ -41,6 +44,7 @@ export default function Movie() {
     movie?.Poster && movie.Poster.trim() !== "" && movie.Poster !== "N/A";
   const posterUrl = hasPoster ? movie!.Poster : PLACEHOLDER_POSTER;
   const [posterError, setPosterError] = useState(false);
+  const [, setFavRefresh] = useState(0);
   const poster = posterError ? PLACEHOLDER_POSTER : posterUrl;
 
   useEffect(() => {
@@ -52,7 +56,15 @@ export default function Movie() {
     [valueOrHide(movie.Runtime), valueOrHide(movie.Rated)]
       .filter(Boolean)
       .join(" - ");
-  const hasYear = movie ? valueOrHide(movie.Year) : null;
+  const hasYearRaw = movie ? valueOrHide(movie.Year) : null;
+  const isOngoingSeries =
+    movie?.Type === "series" &&
+    movie.Year &&
+    movie.Year.trim().endsWith("-");
+  const hasYear =
+    hasYearRaw && isOngoingSeries
+      ? hasYearRaw.replace(/-+$/, "").trim()
+      : hasYearRaw;
 
   return (
     <Box maxW="1200px" mx="auto" px="6" py="10">
@@ -107,24 +119,39 @@ export default function Movie() {
           alignItems={{ md: "flex-start" }}
           gap={{ base: "4", md: "6" }}
         >
-          <Box
-            flexShrink={0}
-            width={{ base: "100%", md: "377px" }}
-            maxW={{ base: "100%", md: "377px" }}
-            aspectRatio="377/558"
-            borderRadius="5px"
-            overflow="hidden"
-            bg="bg.card"
-            boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
-          >
-            <Image
-              src={poster}
-              alt={movie.Title}
-              width="100%"
-              height="100%"
-              objectFit="cover"
-              onError={() => setPosterError(true)}
-            />
+          <Box flexShrink={0} width={{ base: "100%", md: "377px" }} maxW={{ base: "100%", md: "377px" }}>
+            <Box
+              position="relative"
+              aspectRatio="377/558"
+              borderRadius="5px"
+              overflow="hidden"
+              bg="bg.card"
+              boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
+            >
+              <Image
+                src={poster}
+                alt={movie.Title}
+                width="100%"
+                height="100%"
+                objectFit="cover"
+                onError={() => setPosterError(true)}
+              />
+              {movie.Type === "series" && (
+                <Box position="absolute" top="3" left="3">
+                  <TvSeriesTag />
+                </Box>
+              )}
+            </Box>
+            <Box display="flex" alignItems="center" mt="2">
+              <FavoriteHeart
+                isFavorite={isFavorite(movie.imdbID)}
+                showLabel
+                onToggle={() => {
+                  toggleFavorite(movie.imdbID);
+                  setFavRefresh((r) => r + 1);
+                }}
+              />
+            </Box>
           </Box>
           <Box
             flex="1"
@@ -149,9 +176,11 @@ export default function Movie() {
             >
               {movie.Title}
             </Text>
-            {(hasYear || runtimeRated) && (
+            {(hasYear || runtimeRated || isOngoingSeries) && (
               <Text color="text.secondary" fontSize="14" mb="4">
-                {[hasYear, runtimeRated].filter(Boolean).join(" - ")}
+                {[hasYear, isOngoingSeries ? "Ongoing" : null, runtimeRated]
+                  .filter(Boolean)
+                  .join(" - ")}
               </Text>
             )}
             {valueOrHide(movie.imdbRating) && (
