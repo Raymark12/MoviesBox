@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, memo } from "react";
-import { Box, Image, Tag, Text } from "@chakra-ui/react";
+import { Box, Image, Text } from "@chakra-ui/react";
 import { Link } from "react-router";
-import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
 import type { MovieSearchResult } from "~/types";
 import { isFavorite } from "~/services/favorites";
+import { TvSeriesTag } from "~/components/TvSeriesTag";
+import { FavoriteHeart } from "~/components/FavoriteHeart";
 
 const PLACEHOLDER_POSTER = "/images/tv.png";
 
@@ -80,55 +81,9 @@ function MovieCardComponent({ movie }: { movie: MovieSearchResult }) {
             alignItems={{ base: "flex-end", md: "flex-start" }}
             gap="2"
           >
-            {movie.Type === "series" && (
-              <Tag.Root
-                display="flex"
-                alignItems="center"
-                variant="subtle"
-                bg="rgba(255, 255, 255, 0.7)"
-                color="black"
-                fontWeight="semibold"
-                textTransform="uppercase"
-                borderRadius="full"
-                size="sm"
-                px="3"
-                py="1"
-                borderWidth="0"
-                boxShadow="0 1px 4px rgba(0, 0, 0, 0.25)"
-                _focusVisible={{
-                  outline: "none",
-                  boxShadow: "0 1px 4px rgba(0, 0, 0, 0.25)",
-                }}
-              >
-                <Tag.Label>TV Series</Tag.Label>
-              </Tag.Root>
-            )}
+            {movie.Type === "series" && <TvSeriesTag />}
 
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              w="10"
-              h="10"
-              flexShrink={0}
-              borderRadius="full"
-              bg="rgba(255, 255, 255, 0.7)"
-              color={favorite ? "brand.secondary" : "grey.dark"}
-              boxShadow="0 1px 4px rgba(0, 0, 0, 0.25)"
-              aria-label={favorite ? "In your favorites" : "Not in favorites"}
-            >
-              <Box
-                as="span"
-                display="inline-flex"
-                filter="drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4))"
-              >
-                {favorite ? (
-                  <IoMdHeart size={24} />
-                ) : (
-                  <IoMdHeartEmpty size={24} />
-                )}
-              </Box>
-            </Box>
+            <FavoriteHeart isFavorite={favorite} />
           </Box>
 
           <Box p="3" pt="2">
