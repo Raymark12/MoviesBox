@@ -1,4 +1,9 @@
-import type { MovieSearchResult, OmdbSearchResponse } from "~/types";
+import type {
+  MovieSearchResult,
+  OmdbSearchResponse,
+  MovieDetail,
+  OmdbDetailResponse,
+} from "~/types";
 
 const API_URL = "https://www.omdbapi.com";
 const API_KEY = import.meta.env.VITE_OMDB_API_KEY;
@@ -35,5 +40,31 @@ export async function searchMovies(
     return { movies: data.Search, totalResults };
   } catch {
     return { movies: [], totalResults: 0, error: "Failed to connect. Please check your internet." };
+  }
+}
+
+export type DetailResult =
+  | { movie: MovieDetail; error?: never }
+  | { movie: null; error: string };
+
+export async function getMovieById(imdbID: string): Promise<DetailResult> {
+  try {
+    const url = `${API_URL}?apikey=${API_KEY}&i=${encodeURIComponent(imdbID)}&plot=full`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      return { movie: null, error: "Failed to fetch movie. Please try again." };
+    }
+
+    const data: OmdbDetailResponse = await response.json();
+
+    if (data.Response === "False") {
+      return { movie: null, error: data.Error ?? "Movie not found." };
+    }
+
+    const { Response: _, ...movie } = data;
+    return { movie };
+  } catch {
+    return { movie: null, error: "Failed to connect. Please check your internet." };
   }
 }
