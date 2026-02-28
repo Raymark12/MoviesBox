@@ -8,6 +8,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import { Box, Heading, Text } from "@chakra-ui/react";
 import { Provider } from "~/components/ui/provider";
 
 export const links: Route.LinksFunction = () => [
@@ -66,14 +67,43 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main>
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre>
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
+    <Provider>
+      <Box
+        as="main"
+        maxW="1200px"
+        mx="auto"
+        px="6"
+        py="20"
+        bg="bg.page"
+        minH="50vh"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        textAlign="center"
+      >
+        <Heading as="h1" size="xl" color="text.primary" mb="4">
+          {message}
+        </Heading>
+        <Text color="text.secondary" fontSize="md" mb="6">
+          {details}
+        </Text>
+        {stack && (
+          <Box
+            as="pre"
+            p="4"
+            borderRadius="md"
+            bg="bg.card"
+            color="text.secondary"
+            fontSize="sm"
+            overflow="auto"
+            maxW="100%"
+            textAlign="left"
+          >
+            <code>{stack}</code>
+          </Box>
+        )}
+      </Box>
+    </Provider>
   );
 }
