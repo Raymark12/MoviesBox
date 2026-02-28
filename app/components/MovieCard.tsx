@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { Box, Image, Tag, Text } from "@chakra-ui/react";
 import { Link } from "react-router";
 import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
@@ -15,11 +15,19 @@ function MovieCardComponent({ movie }: { movie: MovieSearchResult }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const poster = posterError ? PLACEHOLDER_POSTER : posterUrl;
   const favorite = isFavorite(movie.imdbID);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     setPosterError(false);
     setImageLoaded(false);
   }, [movie.imdbID]);
+
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img?.complete && img.naturalWidth > 0) {
+      setImageLoaded(true);
+    }
+  }, [poster]);
 
   return (
     <Box
@@ -44,6 +52,7 @@ function MovieCardComponent({ movie }: { movie: MovieSearchResult }) {
       >
         <Link to={`/movie/${movie.imdbID}`}>
           <Image
+            ref={imgRef}
             src={poster}
             alt={movie.Title}
             width="100%"
