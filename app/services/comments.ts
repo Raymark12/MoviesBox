@@ -10,6 +10,13 @@ export type Comment = {
   createdAt: string;
 };
 
+export type AddCommentPayload = {
+  text: string;
+  rating?: number;
+  title?: string;
+  author?: string;
+};
+
 type StoredComments = Record<string, Comment[]>;
 
 function getStored(): StoredComments {
@@ -42,7 +49,7 @@ export function getComments(imdbID: string): Comment[] {
 
 export function addComment(
   imdbID: string,
-  payload: { text: string; rating?: number; title?: string; author?: string }
+  payload: AddCommentPayload
 ): Comment {
   const data = getStored();
   const list = data[imdbID] ?? [];
