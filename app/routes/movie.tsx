@@ -421,7 +421,7 @@ export default function Movie() {
               fontWeight="semibold"
               fontSize="30"
               lineHeight="100%"
-              mb="4"
+              mb="7"
             >
               Commentary
             </Text>

@@ -121,7 +121,7 @@ export function CommentForm({ imdbID, onCommentAdded }: CommentFormProps) {
         <Box display="flex" flexDirection="column" gap="1">
           <Textarea
             id="comment-text"
-            placeholder="Add your comments here..."
+            placeholder="Add your comments here"
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             rows={3}
