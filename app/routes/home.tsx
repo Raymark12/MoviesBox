@@ -74,7 +74,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             <Text fontWeight="semibold" fontSize="30" color="text.primary">
               Don't know what to search?
             </Text>
-            <Text fontWeight="regular" fontSize="18" color="text.secondary">
+            <Text fontWeight="semibold" fontSize="18" color="text.secondary">
               Here's an offer you can't refuse
             </Text>
           </Box>

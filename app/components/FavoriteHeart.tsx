@@ -19,8 +19,8 @@ export function FavoriteHeart({
       display="flex"
       alignItems="center"
       justifyContent="center"
-      w="10"
-      h="10"
+      w="8"
+      h="8"
       flexShrink={0}
       borderRadius="full"
       bg="rgba(255, 255, 255, 0.7)"
@@ -32,7 +32,7 @@ export function FavoriteHeart({
         display="inline-flex"
         filter="drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4))"
       >
-        {isFavorite ? <IoMdHeart size={24} /> : <IoMdHeartEmpty size={24} />}
+        {isFavorite ? <IoMdHeart size={20} /> : <IoMdHeartEmpty size={20} />}
       </Box>
     </Box>
   );
