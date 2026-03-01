@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Box, Heading, Image, SimpleGrid, Text } from "@chakra-ui/react";
 import { useLoaderData, useNavigate } from "react-router";
 import { IoMdArrowBack } from "react-icons/io";
@@ -6,8 +6,11 @@ import type { Route } from "./+types/movie";
 import { getMovieById } from "~/services/omdb";
 import type { MovieDetail } from "~/types";
 import { isFavorite, toggleFavorite } from "~/services/favorites";
+import { getComments, type Comment } from "~/services/comments";
 import { TvSeriesTag } from "~/components/TvSeriesTag";
 import { FavoriteHeart } from "~/components/FavoriteHeart";
+import { CommentForm } from "~/components/CommentForm";
+import { CommentList } from "~/components/CommentList";
 
 const PLACEHOLDER_POSTER = "/images/tv.png";
 
@@ -47,9 +50,19 @@ export default function Movie() {
   const [, setFavRefresh] = useState(0);
   const poster = posterError ? PLACEHOLDER_POSTER : posterUrl;
 
+  const [comments, setComments] = useState<Comment[]>([]);
+
+  const loadComments = useCallback(() => {
+    if (movie?.imdbID) setComments(getComments(movie.imdbID));
+  }, [movie?.imdbID]);
+
   useEffect(() => {
     setPosterError(false);
   }, [movie?.imdbID]);
+
+  useEffect(() => {
+    loadComments();
+  }, [loadComments]);
 
   const runtimeRated =
     movie &&
@@ -60,10 +73,10 @@ export default function Movie() {
   const isOngoingSeries =
     movie?.Type === "series" &&
     movie.Year &&
-    movie.Year.trim().endsWith("-");
+    /[-–]\s*$/.test(movie.Year.trim());
   const hasYear =
     hasYearRaw && isOngoingSeries
-      ? hasYearRaw.replace(/-+$/, "").trim()
+      ? hasYearRaw.replace(/[-–]\s*$/, "").trim()
       : hasYearRaw;
 
   return (
@@ -113,126 +126,114 @@ export default function Movie() {
       {error && <Text color="text.negative">{error}</Text>}
       {!error && !movie && <Text color="text.secondary">Loading…</Text>}
       {!error && movie && (
-        <Box
-          display="flex"
-          flexDirection={{ base: "column", md: "row" }}
-          alignItems={{ md: "flex-start" }}
-          gap={{ base: "4", md: "6" }}
-        >
-          <Box flexShrink={0} width={{ base: "100%", md: "377px" }} maxW={{ base: "100%", md: "377px" }}>
-            <Box
-              position="relative"
-              aspectRatio="377/558"
-              borderRadius="5px"
-              overflow="hidden"
-              bg="bg.card"
-              boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
-            >
-              <Image
-                src={poster}
-                alt={movie.Title}
-                width="100%"
-                height="100%"
-                objectFit="cover"
-                onError={() => setPosterError(true)}
-              />
-              {movie.Type === "series" && (
-                <Box position="absolute" top="3" left="3">
-                  <TvSeriesTag />
-                </Box>
-              )}
-            </Box>
-            <Box display="flex" alignItems="center" mt="2">
-              <FavoriteHeart
-                isFavorite={isFavorite(movie.imdbID)}
-                showLabel
-                onToggle={() => {
-                  toggleFavorite(movie.imdbID);
-                  setFavRefresh((r) => r + 1);
-                }}
-              />
-            </Box>
-          </Box>
+        <Box width="100%">
           <Box
-            flex="1"
-            minW="0"
-            width={{ base: "100%", md: "0" }}
-            textAlign="left"
-            height={{ base: "auto", md: "558px" }}
-            maxHeight={{ md: "558px" }}
-            overflowY={{ md: "auto" }}
-            overflowX="hidden"
-            display="block"
+            display="flex"
+            flexDirection={{ base: "column", md: "row" }}
+            alignItems={{ md: "flex-start" }}
+            gap={{ base: "4", md: "6" }}
           >
-            <Text
-              as="h2"
-              fontSize={{ base: "30", md: "67" }}
-              fontWeight="bold"
-              color="text.primary"
-              mb="1"
-              lineHeight="1.2"
-              mt="-3"
-              wordBreak="break-word"
+            <Box
+              flexShrink={0}
+              width={{ base: "100%", md: "377px" }}
+              maxW={{ base: "100%", md: "377px" }}
             >
-              {movie.Title}
-            </Text>
-            {(hasYear || runtimeRated || isOngoingSeries) && (
-              <Text color="text.secondary" fontSize="14" mb="4">
-                {[hasYear, isOngoingSeries ? "Ongoing" : null, runtimeRated]
-                  .filter(Boolean)
-                  .join(" - ")}
+              <Box
+                position="relative"
+                aspectRatio="377/558"
+                borderRadius="5px"
+                overflow="hidden"
+                bg="bg.card"
+                boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
+              >
+                <Image
+                  src={poster}
+                  alt={movie.Title}
+                  width="100%"
+                  height="100%"
+                  objectFit="cover"
+                  onError={() => setPosterError(true)}
+                />
+                {movie.Type === "series" && (
+                  <Box position="absolute" top="3" left="3">
+                    <TvSeriesTag />
+                  </Box>
+                )}
+              </Box>
+              <Box display="flex" alignItems="center" mt="2">
+                <FavoriteHeart
+                  isFavorite={isFavorite(movie.imdbID)}
+                  showLabel
+                  onToggle={() => {
+                    toggleFavorite(movie.imdbID);
+                    setFavRefresh((r) => r + 1);
+                  }}
+                />
+              </Box>
+            </Box>
+            <Box
+              flex="1"
+              minW="0"
+              width={{ base: "100%", md: "0" }}
+              textAlign="left"
+              height={{ base: "auto", md: "558px" }}
+              maxHeight={{ md: "558px" }}
+              overflowY={{ md: "auto" }}
+              overflowX="hidden"
+              display="block"
+            >
+              <Text
+                as="h2"
+                fontSize={{ base: "30", md: "67" }}
+                fontWeight="bold"
+                color="text.primary"
+                mb="1"
+                lineHeight="1.2"
+                mt={{ base: "0", md: "-3" }}
+                wordBreak="break-word"
+              >
+                {movie.Title}
               </Text>
-            )}
-            {valueOrHide(movie.imdbRating) && (
-              <Box mb="4" display="flex" alignItems="center">
-                <Box display="flex" alignItems="center" gap="2">
-                  <Image
-                    src="/images/imdb-icon.svg"
-                    alt="IMDb"
-                    width="64px"
-                    height="32px"
-                    borderRadius="5px"
-                  />
+              {(hasYear || runtimeRated || isOngoingSeries) && (
+                <Text color="text.secondary" fontSize="14" mb="4">
+                  {[hasYear, isOngoingSeries ? "Ongoing" : null, runtimeRated]
+                    .filter(Boolean)
+                    .join(" - ")}
+                </Text>
+              )}
+              {valueOrHide(movie.imdbRating) && (
+                <Box mb="4" display="flex" alignItems="center">
+                  <Box display="flex" alignItems="center" gap="2">
+                    <Image
+                      src="/images/imdb-icon.svg"
+                      alt="IMDb"
+                      width="64px"
+                      height="32px"
+                      borderRadius="5px"
+                    />
+                    <Text
+                      color="text.primary"
+                      fontWeight="medium"
+                      fontSize="24px"
+                      lineHeight="100%"
+                    >
+                      {movie.imdbRating}
+                    </Text>
+                  </Box>
                   <Text
                     color="text.primary"
-                    fontWeight="medium"
-                    fontSize="24px"
+                    fontWeight="regular"
+                    fontSize="16px"
                     lineHeight="100%"
+                    transform="translateY(3px)"
                   >
-                    {movie.imdbRating}
+                    /10
                   </Text>
                 </Box>
-                <Text
-                  color="text.primary"
-                  fontWeight="regular"
-                  fontSize="16px"
-                  lineHeight="100%"
-                  transform="translateY(3px)"
-                >
-                  /10
-                </Text>
-              </Box>
-            )}
+              )}
 
-            {valueOrHide(movie.Plot) && (
-              <Box mb="4">
-                <Text
-                  color="text.secondary"
-                  fontWeight="semibold"
-                  fontSize="18"
-                  lineHeight="100%"
-                  mb="1"
-                >
-                  Overview
-                </Text>
-                <Text color="text.primary" fontSize="14" lineHeight="tall">
-                  {movie.Plot}
-                </Text>
-              </Box>
-            )}
-            <SimpleGrid columns={{ base: 2, md: 4 }} gap="4">
-              {valueOrHide(movie.Actors) && (
-                <Box>
+              {valueOrHide(movie.Plot) && (
+                <Box mb="4">
                   <Text
                     color="text.secondary"
                     fontWeight="semibold"
@@ -240,102 +241,140 @@ export default function Movie() {
                     lineHeight="100%"
                     mb="1"
                   >
-                    Cast
+                    Overview
                   </Text>
-                  <Box as="ul" listStyleType="none" p="0" m="0">
-                    {commaList(movie.Actors).map((name) => (
-                      <Text
-                        key={name}
-                        as="li"
-                        color="text.primary"
-                        fontSize="14"
-                        mb="0.5"
-                      >
-                        {name}
-                      </Text>
-                    ))}
-                  </Box>
+                  <Text color="text.primary" fontSize="14" lineHeight="tall">
+                    {movie.Plot}
+                  </Text>
                 </Box>
               )}
-              {valueOrHide(movie.Genre) && (
-                <Box>
-                  <Text
-                    color="text.secondary"
-                    fontWeight="semibold"
-                    fontSize="18"
-                    lineHeight="100%"
-                    mb="1"
-                  >
-                    Genre
-                  </Text>
-                  <Box as="ul" listStyleType="none" p="0" m="0">
-                    {commaList(movie.Genre).map((item) => (
-                      <Text
-                        key={item}
-                        as="li"
-                        color="text.primary"
-                        fontSize="14"
-                        mb="0.5"
-                      >
-                        {item}
-                      </Text>
-                    ))}
+              <SimpleGrid columns={{ base: 2, md: 4 }} gap="4">
+                {valueOrHide(movie.Actors) && (
+                  <Box>
+                    <Text
+                      color="text.secondary"
+                      fontWeight="semibold"
+                      fontSize="18"
+                      lineHeight="100%"
+                      mb="1"
+                    >
+                      Cast
+                    </Text>
+                    <Box as="ul" listStyleType="none" p="0" m="0">
+                      {commaList(movie.Actors).map((name) => (
+                        <Text
+                          key={name}
+                          as="li"
+                          color="text.primary"
+                          fontSize="14"
+                          mb="0.5"
+                        >
+                          {name}
+                        </Text>
+                      ))}
+                    </Box>
                   </Box>
-                </Box>
-              )}
-              {valueOrHide(movie.Director) && (
-                <Box>
-                  <Text
-                    color="text.secondary"
-                    fontWeight="semibold"
-                    fontSize="18"
-                    lineHeight="100%"
-                    mb="1"
-                  >
-                    Director
-                  </Text>
-                  <Box as="ul" listStyleType="none" p="0" m="0">
-                    {commaList(movie.Director).map((name) => (
-                      <Text
-                        key={name}
-                        as="li"
-                        color="text.primary"
-                        fontSize="14"
-                        mb="0.5"
-                      >
-                        {name}
-                      </Text>
-                    ))}
+                )}
+                {valueOrHide(movie.Genre) && (
+                  <Box>
+                    <Text
+                      color="text.secondary"
+                      fontWeight="semibold"
+                      fontSize="18"
+                      lineHeight="100%"
+                      mb="1"
+                    >
+                      Genre
+                    </Text>
+                    <Box as="ul" listStyleType="none" p="0" m="0">
+                      {commaList(movie.Genre).map((item) => (
+                        <Text
+                          key={item}
+                          as="li"
+                          color="text.primary"
+                          fontSize="14"
+                          mb="0.5"
+                        >
+                          {item}
+                        </Text>
+                      ))}
+                    </Box>
                   </Box>
-                </Box>
-              )}
-              {valueOrHide(movie.Writer) && (
-                <Box>
-                  <Text
-                    color="text.secondary"
-                    fontWeight="semibold"
-                    fontSize="18"
-                    lineHeight="100%"
-                    mb="1"
-                  >
-                    Writers
-                  </Text>
-                  <Box as="ul" listStyleType="none" p="0" m="0">
-                    {commaList(movie.Writer).map((name) => (
-                      <Text
-                        key={name}
-                        as="li"
-                        color="text.primary"
-                        fontSize="14"
-                        mb="0.5"
-                      >
-                        {name}
-                      </Text>
-                    ))}
+                )}
+                {valueOrHide(movie.Director) && (
+                  <Box>
+                    <Text
+                      color="text.secondary"
+                      fontWeight="semibold"
+                      fontSize="18"
+                      lineHeight="100%"
+                      mb="1"
+                    >
+                      Director
+                    </Text>
+                    <Box as="ul" listStyleType="none" p="0" m="0">
+                      {commaList(movie.Director).map((name) => (
+                        <Text
+                          key={name}
+                          as="li"
+                          color="text.primary"
+                          fontSize="14"
+                          mb="0.5"
+                        >
+                          {name}
+                        </Text>
+                      ))}
+                    </Box>
                   </Box>
-                </Box>
-              )}
-            </SimpleGrid>
+                )}
+                {valueOrHide(movie.Writer) && (
+                  <Box>
+                    <Text
+                      color="text.secondary"
+                      fontWeight="semibold"
+                      fontSize="18"
+                      lineHeight="100%"
+                      mb="1"
+                    >
+                      Writers
+                    </Text>
+                    <Box as="ul" listStyleType="none" p="0" m="0">
+                      {commaList(movie.Writer).map((name) => (
+                        <Text
+                          key={name}
+                          as="li"
+                          color="text.primary"
+                          fontSize="14"
+                          mb="0.5"
+                        >
+                          {name}
+                        </Text>
+                      ))}
+                    </Box>
+                  </Box>
+                )}
+              </SimpleGrid>
+            </Box>
+          </Box>
+
+          <Box
+            mt="10"
+            pt="8"
+            borderTopWidth="1px"
+            borderColor="grey.border"
+            width="100%"
+          >
+            <Text
+              color="text.primary"
+              fontWeight="semibold"
+              fontSize="30"
+              lineHeight="100%"
+              mb="4"
+            >
+              Commentary
+            </Text>
+            <CommentForm imdbID={movie.imdbID} onCommentAdded={loadComments} />
+            <CommentList comments={comments} />
           </Box>
         </Box>
       )}
