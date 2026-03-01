@@ -10,6 +10,7 @@ import {
 import { useLoaderData, useNavigate } from "react-router";
 import { IoMdArrowBack } from "react-icons/io";
 import type { Route } from "./+types/movie";
+import { AppHeader } from "~/components/AppHeader";
 import { getMovieById } from "~/services/omdb";
 import type { MovieDetail } from "~/types";
 import { isFavorite, toggleFavorite } from "~/services/favorites";
@@ -88,23 +89,7 @@ export default function Movie() {
 
   return (
     <Box maxW="1200px" mx="auto" px="6" py="10">
-      <Box display="flex" alignItems="center" gap="6" mb="8">
-        <Image
-          src="/images/tv.png"
-          alt="MovieBox logo"
-          width="50px"
-          height="50px"
-        />
-        <Heading
-          as="h1"
-          fontSize="24px"
-          fontWeight="bold"
-          lineHeight="24px"
-          color="text.primary"
-        >
-          MovieBox
-        </Heading>
-      </Box>
+      <AppHeader />
       <Box
         as="button"
         onClick={() => navigate(-1)}

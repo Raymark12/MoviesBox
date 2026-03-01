@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   ButtonGroup,
-  Heading,
   Image,
   SimpleGrid,
   Skeleton,
@@ -10,6 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { useNavigation, useSearchParams } from "react-router";
 import type { Route } from "./+types/home";
+import { AppHeader } from "~/components/AppHeader";
 import { SearchBar } from "~/components/SearchBar";
 import { MovieCard } from "~/components/MovieCard";
 import { searchMovies } from "~/services/omdb";
@@ -51,25 +51,13 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const navigation = useNavigation();
   const nextPath = navigation.location?.pathname ?? "/";
   const isStayingOnHome = nextPath === "/" || nextPath === "";
-  const isSearching =
-    navigation.state === "loading" && isStayingOnHome;
+  const isSearching = navigation.state === "loading" && isStayingOnHome;
   const nextParams = new URLSearchParams(navigation.location?.search ?? "");
   const isQueryChanging = isSearching && (nextParams.get("q") ?? "") !== query;
 
   return (
     <Box maxW="1200px" mx="auto" px="6" py="10">
-      <Box display="flex" alignItems="center" gap="6" mb="8">
-        <Image
-          src="/images/tv.png"
-          alt="MovieBox logo"
-          width="50px"
-          height="50px"
-        />
-        <Heading as="h1" fontSize="24px" fontWeight="bold" lineHeight="24px">
-          MovieBox
-        </Heading>
-      </Box>
-
+      <AppHeader />
       <SearchBar />
 
       <Box mt="8">
