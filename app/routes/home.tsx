@@ -49,7 +49,12 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const { movies, query, error, totalResults, page, totalPages } = loaderData;
   const [, setSearchParams] = useSearchParams();
   const navigation = useNavigation();
-  const isSearching = navigation.state === "loading";
+  const isNavigatingToOtherPage =
+    navigation.state === "loading" &&
+    navigation.location?.pathname !== undefined &&
+    navigation.location.pathname !== "/";
+  const isSearching =
+    navigation.state === "loading" && !isNavigatingToOtherPage;
   const nextParams = new URLSearchParams(navigation.location?.search ?? "");
   const isQueryChanging = isSearching && (nextParams.get("q") ?? "") !== query;
 

@@ -1,5 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import { Box, Heading, Image, SimpleGrid, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Heading,
+  Image,
+  SimpleGrid,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
 import { useLoaderData, useNavigate } from "react-router";
 import { IoMdArrowBack } from "react-icons/io";
 import type { Route } from "./+types/movie";
@@ -124,7 +131,19 @@ export default function Movie() {
       </Box>
 
       {error && <Text color="text.negative">{error}</Text>}
-      {!error && !movie && <Text color="text.secondary">Loading…</Text>}
+      {!error && !movie && (
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          gap="4"
+          py="20"
+        >
+          <Spinner size="xl" color="brand.primary" />
+          <Text color="text.secondary">Loading…</Text>
+        </Box>
+      )}
       {!error && movie && (
         <Box width="100%">
           <Box
