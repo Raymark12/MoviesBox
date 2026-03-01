@@ -247,9 +247,17 @@ export default function Movie() {
                   >
                     Overview
                   </Text>
-                  <Text color="text.primary" fontSize="14" lineHeight="tall">
-                    {movie.Plot}
-                  </Text>
+                  <Box
+                    maxH="140px"
+                    overflowY="auto"
+                    overflowX="hidden"
+                    pr="2"
+                    css={{ scrollbarGutter: "stable" }}
+                  >
+                    <Text color="text.primary" fontSize="14" lineHeight="tall">
+                      {movie.Plot}
+                    </Text>
+                  </Box>
                 </Box>
               )}
               <SimpleGrid columns={{ base: 2, md: 4 }} gap="4">
@@ -264,7 +272,17 @@ export default function Movie() {
                     >
                       Cast
                     </Text>
-                    <Box as="ul" listStyleType="none" p="0" m="0">
+                    <Box
+                      as="ul"
+                      listStyleType="none"
+                      p="0"
+                      m="0"
+                      maxH="140px"
+                      overflowY="auto"
+                      overflowX="hidden"
+                      pr="2"
+                      css={{ scrollbarGutter: "stable" }}
+                    >
                       {commaList(movie.Actors).map((name) => (
                         <Text
                           key={name}
@@ -290,7 +308,17 @@ export default function Movie() {
                     >
                       Genre
                     </Text>
-                    <Box as="ul" listStyleType="none" p="0" m="0">
+                    <Box
+                      as="ul"
+                      listStyleType="none"
+                      p="0"
+                      m="0"
+                      maxH="140px"
+                      overflowY="auto"
+                      overflowX="hidden"
+                      pr="2"
+                      css={{ scrollbarGutter: "stable" }}
+                    >
                       {commaList(movie.Genre).map((item) => (
                         <Text
                           key={item}
@@ -316,7 +344,17 @@ export default function Movie() {
                     >
                       Director
                     </Text>
-                    <Box as="ul" listStyleType="none" p="0" m="0">
+                    <Box
+                      as="ul"
+                      listStyleType="none"
+                      p="0"
+                      m="0"
+                      maxH="140px"
+                      overflowY="auto"
+                      overflowX="hidden"
+                      pr="2"
+                      css={{ scrollbarGutter: "stable" }}
+                    >
                       {commaList(movie.Director).map((name) => (
                         <Text
                           key={name}
@@ -342,7 +380,17 @@ export default function Movie() {
                     >
                       Writers
                     </Text>
-                    <Box as="ul" listStyleType="none" p="0" m="0">
+                    <Box
+                      as="ul"
+                      listStyleType="none"
+                      p="0"
+                      m="0"
+                      maxH="140px"
+                      overflowY="auto"
+                      overflowX="hidden"
+                      pr="2"
+                      css={{ scrollbarGutter: "stable" }}
+                    >
                       {commaList(movie.Writer).map((name) => (
                         <Text
                           key={name}
