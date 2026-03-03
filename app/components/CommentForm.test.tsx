@@ -26,7 +26,7 @@ describe("CommentForm", () => {
       <CommentForm imdbID={imdbID} onCommentAdded={onCommentAdded} />
     );
 
-    expect(screen.getByPlaceholderText("Add your comments here...")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Add your comments here")).toBeInTheDocument();
     expect(screen.getByText("Rate:")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Anonymous")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Review title")).toBeInTheDocument();
@@ -47,7 +47,7 @@ describe("CommentForm", () => {
       <CommentForm imdbID={imdbID} onCommentAdded={onCommentAdded} />
     );
 
-    const textarea = screen.getByPlaceholderText("Add your comments here...");
+    const textarea = screen.getByPlaceholderText("Add your comments here");
     fireEvent.change(textarea, { target: { value: "Great movie!" } });
 
     expect(screen.getByRole("button", { name: "Post" })).not.toBeDisabled();
@@ -59,7 +59,7 @@ describe("CommentForm", () => {
     );
 
     fireEvent.change(
-      screen.getByPlaceholderText("Add your comments here..."),
+      screen.getByPlaceholderText("Add your comments here"),
       { target: { value: "Great movie!" } }
     );
     fireEvent.click(screen.getByRole("button", { name: "Post" }));
@@ -79,7 +79,7 @@ describe("CommentForm", () => {
       <CommentForm imdbID={imdbID} onCommentAdded={onCommentAdded} />
     );
 
-    const textarea = screen.getByPlaceholderText("Add your comments here...");
+    const textarea = screen.getByPlaceholderText("Add your comments here");
     const nameInput = screen.getByPlaceholderText("Anonymous");
     const titleInput = screen.getByPlaceholderText("Review title");
 
@@ -99,7 +99,7 @@ describe("CommentForm", () => {
     );
 
     fireEvent.change(
-      screen.getByPlaceholderText("Add your comments here..."),
+      screen.getByPlaceholderText("Add your comments here"),
       { target: { value: "Comment" } }
     );
     fireEvent.change(screen.getByPlaceholderText("Anonymous"), {
